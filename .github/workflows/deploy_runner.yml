@@ -20,7 +20,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-runner:
+  deploy-runner:
     environment: ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
     permissions:

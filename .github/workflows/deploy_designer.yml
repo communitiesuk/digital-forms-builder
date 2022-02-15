@@ -20,7 +20,7 @@ env:
 
 jobs:
   
-  build-designer:
+  deploy-designer:
     environment: ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
     permissions:
@@ -37,6 +37,7 @@ jobs:
       - name: Set environment variables
         run: |
           echo "DOCKER_IMAGE_TAG=${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:$GITHUB_SHA" >> $GITHUB_ENV
+          echo 
 
       - name: list environment
         run: |
@@ -48,17 +49,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Build and push docker image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: .
-      #     tags: |
-      #       ${{ env.DOCKER_IMAGE_TAG }}
-      #     push: true
-      #     file: Dockerfile_Designer
-      #     build-args: |
-      #       COMMIT_SHA=$GITHUB_SHA
 
       - name: Install cloudfoundary
         shell: bash
@@ -75,5 +65,5 @@ jobs:
         run: |
           cf api ${{ secrets.CF_API }}
           cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
-          cf target -o dluhc-funding-service-design -s sandbox
+          cf target -o ${{ secrets.CF_ORG }} -s ${{ github.event.inputs.space }}
           CF_DOCKER_PASSWORD=${{ secrets.GHCR_PAT }} cf push FDS-Designer-Persistent -f ./manifest.yml 
