@@ -1,0 +1,33 @@
+applications:
+- name: FDS-Runner-Persistent
+  docker:
+    image: ghcr.io/communitiesuk/digital-form-builder/runner:latest
+  memory: 528M    
+  sandbox: true
+  # buildpacks:
+  # - https://github.com/cloudfoundry/python-buildpack.git
+  # command: flask run --host 0.0.0.0 --port 8080
+  env:  
+    PREVIEW_MODE: TRUE
+
+- name: FDS-Designer-Persistent
+  docker:
+    image: ghcr.io/xgovformbuilder/digital-form-builder-designer:3.17.3-rc.831
+    # username: docker-user-name
+  memory: 528M
+  # buildpacks:
+  # - https://github.com/cloudfoundry/python-buildpack.git
+  # command: flask run --host 0.0.0.0 --port 8080
+  env:  
+    # CHOKIDAR_USEPOLLING: true
+    # REDIS_HOST: redis
+    # REDIS_PORT: 6379
+    # REDIS_PASSWORD: 123abc
+    # sandbox: true
+    PREVIEW_MODE: TRUE 
+    PUBLISH_URL: https://FDS-Runner-Persistent.london.cloudapps.digital
+    PREVIEW_URL: https://FDS-Runner-Persistent.london.cloudapps.digital
+    S3_BUCKET: {{ env['S3_BUCKET'] }}
+    PERSISTENT_BACKEND: 's3'
+    AWS_ACCESS_KEY_ID: {{ env['AWS_ACCESS_KEY_ID'] }}
+    AWS_SECRET_ACCESS_KEY: (( AWS_SECRET_ACCESS_KEY ))

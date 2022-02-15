@@ -71,8 +71,8 @@ jobs:
       - name: Setup Vars file for manifest expansion
         uses: cuchi/jinja2-action@v1.2.0
         with:
-          template: vars.yml.j2
-          output_file: vars.yml
+          template: manifest.yml.j2
+          output_file: manifest.yml
           strict: true
         env: 
           S3_BUCKET: ${{ env.bucket_name }}
