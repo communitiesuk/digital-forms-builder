@@ -1,0 +1,58 @@
+name: Deploy Runner to PaaS
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: The branch to create a build from
+        required: true
+        default: main
+      space:
+        description: The space to deploy to
+        required: true
+        default: sandbox
+      environment:
+        description: The environment to deploy with
+        required: false
+
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-runner:
+    environment: ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      DOCKER_IMAGE: communitiesuk/digital-form-builder/runner
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set environment variables
+        run: |
+          echo "DOCKER_IMAGE_TAG=${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:$GITHUB_SHA" >> $GITHUB_ENV
+      - name: Install cloudfoundary
+        shell: bash
+        id: install-cf-cli
+        run: |
+          wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+          echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+          sudo apt-get update
+          sudo apt-get install cf8-cli
+      - name: Deploy to Gov.uk PaaS
+        id: deploy-to-paas
+        shell: bash
+        run: |
+          cf api ${{ secrets.CF_API }}
+          cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
+          cf target -o ${{ secrets.CF_ORG }} -s ${{ github.event.inputs.space }}
+          CF_DOCKER_PASSWORD=${{ secrets.GITHUB_TOKEN }} cf push FDS-Runner-Persistent -f ./runner/manifest.yml \
+            --docker-image ${{ env.DOCKER_IMAGE_TAG }} \
+            --docker-username ${{ github.actor }}
