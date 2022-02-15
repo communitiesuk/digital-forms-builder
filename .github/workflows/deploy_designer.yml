@@ -58,6 +58,8 @@ jobs:
           echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
           sudo apt-get update
           sudo apt-get install cf8-cli
+      - name: install jq
+        run: curl -sS https://webinstall.dev/jq | bash
 
       - name: Deploy to Gov.uk PaaS
         id: deploy-to-paas
