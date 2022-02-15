@@ -67,10 +67,18 @@ jobs:
           echo `cf env FDS-Designer-Persistent | grep -e 'aws_access_key_id'  | sed "s/\"//g" | sed "s/,//g" | sed "s/: /=/g"` >> $GITHUB_ENV
           echo `cf env FDS-Designer-Persistent | grep -e 'aws_secret_access_ke'  | sed "s/\"//g" | sed "s/,//g" | sed "s/: /=/g"` >> $GITHUB_ENV
           echo `cf env FDS-Designer-Persistent | grep -e 'bucket_name'  | sed "s/\"//g" | sed "s/,//g" | sed "s/: /=/g"` >> $GITHUB_ENV
-          echo "echoing ${{ env.aws_access_key_id }}"
-          cf env FDS-Designer-Persistent | grep "aws_access_key_id"
-          cf env FDS-Designer-Persistent | grep "aws_secret_access_key"
-          cf env FDS-Designer-Persistent | grep "bucket_name"
+
+      - name: Setup Vars file for manifest expansion
+        uses: cuchi/jinja2-action@v1.2.0
+        with:
+          template: vars.yml.j2
+          output_file: vars.yml
+          strict: true
+          variables: |
+            S3_BUCKET=${{ env.bucket_name }}
+            AWS_ACCESS_KEY_ID=${{ env.aws_access_key_id }}
+            AWS_SECRET_ACCESS_KEY=${{ env.aws_secret_access_key }}
+
       - name: Deploy to Gov.uk PaaS
         id: deploy-to-paas
         shell: bash
@@ -78,7 +86,4 @@ jobs:
           cf api ${{ secrets.CF_API }}
           cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
           cf target -o ${{ secrets.CF_ORG }} -s ${{ github.event.inputs.space }}
-          CF_DOCKER_PASSWORD=${{ secrets.GHCR_PAT }} cf push FDS-Designer-Persistent -f ./manifest.yml \
-          --var S3_BUCKET='FDS-Persistent-S3' \
-          --var AWS_ACCESS_KEY_ID=${{ env.aws_access_key_id }} \
-          --var AWS_SECRET_ACCESS_KEY=${{ env.aws_secret_access_key }}
+          CF_DOCKER_PASSWORD=${{ secrets.GHCR_PAT }} cf push FDS-Designer-Persistent -f ./manifest.yml --vars-file vars.yml
