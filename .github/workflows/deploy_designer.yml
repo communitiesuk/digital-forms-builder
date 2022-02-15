@@ -58,9 +58,15 @@ jobs:
           echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
           sudo apt-get update
           sudo apt-get install cf8-cli
-      - name: install jq
-        run: jq -?
 
+      - name: get cf environment variables
+        run: |
+          cf api ${{ secrets.CF_API }}
+          cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
+          cf target -o ${{ secrets.CF_ORG }} -s ${{ github.event.inputs.space }}
+          cf env FDS-Designer-Persistent | grep "aws_access_key_id"
+          cf env FDS-Designer-Persistent | grep "aws_secret_access_key"
+          cf env FDS-Designer-Persistent | grep "bucket_name"
       - name: Deploy to Gov.uk PaaS
         id: deploy-to-paas
         shell: bash
@@ -68,4 +74,7 @@ jobs:
           cf api ${{ secrets.CF_API }}
           cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
           cf target -o ${{ secrets.CF_ORG }} -s ${{ github.event.inputs.space }}
-          CF_DOCKER_PASSWORD=${{ secrets.GHCR_PAT }} cf push FDS-Designer-Persistent -f ./manifest.yml 
+          CF_DOCKER_PASSWORD=${{ secrets.GHCR_PAT }} cf push FDS-Designer-Persistent -f ./manifest.yml \
+          --var S3_BUCKET=value
+          --var AWS_ACCESS_KEY_ID=value
+          --var AWS_SECRET_ACCESS_KEY=value
