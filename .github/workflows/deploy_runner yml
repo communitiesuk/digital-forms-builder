@@ -52,6 +52,4 @@ jobs:
           cf api ${{ secrets.CF_API }}
           cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
           cf target -o ${{ secrets.CF_ORGANISATION }} -s ${{ github.event.inputs.space }}
-          CF_DOCKER_PASSWORD=${{ secrets.GITHUB_TOKEN }} cf push cifu-xgov-runner-${{ github.event.inputs.branch }} -f ./runner/manifest.yml \
-            --docker-image ${{ env.DOCKER_IMAGE_TAG }} \
-            --docker-username ${{ github.actor }}
+          CF_DOCKER_PASSWORD=${{ secrets.GITHUB_TOKEN }} cf push FDS-Runner-Persistent -f ./runner/manifest.yml \
