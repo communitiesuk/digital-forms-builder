@@ -37,7 +37,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "DOCKER_IMAGE_TAG=${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE_TAG=${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}" >> $GITHUB_ENV
       - name: Install cloudfoundary
         shell: bash
         id: install-cf-cli
