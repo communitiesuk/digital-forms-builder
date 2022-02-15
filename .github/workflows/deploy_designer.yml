@@ -1,4 +1,4 @@
-name: Deploy Runner to PaaS
+name: Deploy Designer to PaaS
 
 on:
   workflow_dispatch:
