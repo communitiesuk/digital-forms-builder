@@ -14,7 +14,7 @@ on:
       environment:
         description: The environment to deploy with
         required: false
-  push:
+
 
 env:
   REGISTRY: ghcr.io
