@@ -79,6 +79,6 @@ jobs:
           cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
           cf target -o ${{ secrets.CF_ORG }} -s ${{ github.event.inputs.space }}
           CF_DOCKER_PASSWORD=${{ secrets.GHCR_PAT }} cf push FDS-Designer-Persistent -f ./manifest.yml \
-          --var S3_BUCKET=${{ env.bucket_name }} \
+          --var S3_BUCKET='FDS-Persistent-S3' \
           --var AWS_ACCESS_KEY_ID=${{ env.aws_access_key_id }} \
           --var AWS_SECRET_ACCESS_KEY=${{ env.aws_secret_access_key }}
