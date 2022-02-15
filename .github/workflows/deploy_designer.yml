@@ -74,10 +74,10 @@ jobs:
           template: vars.yml.j2
           output_file: vars.yml
           strict: true
-          variables: |
-            S3_BUCKET=${{ env.bucket_name }}
-            AWS_ACCESS_KEY_ID=${{ env.aws_access_key_id }}
-            AWS_SECRET_ACCESS_KEY=${{ env.aws_secret_access_key }}
+        env: 
+          S3_BUCKET: ${{ env.bucket_name }}
+          AWS_ACCESS_KEY_ID: ${{ env.aws_access_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.aws_secret_access_key }}
 
       - name: Deploy to Gov.uk PaaS
         id: deploy-to-paas
