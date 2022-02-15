@@ -64,7 +64,7 @@ jobs:
           cf api ${{ secrets.CF_API }}
           cf auth "${{ secrets.CF_USER }}" "${{ secrets.CF_PASSWORD }}"
           cf target -o ${{ secrets.CF_ORG }} -s ${{ github.event.inputs.space }}
-          echo `cf env FDS-Designer-Persistent | grep -e 'aws_access_key_id' -e 'aws_secret_access_key' -e 'bucket_name' | sed "s/\"//g" | sed "s/,//g" | sed "s/: /=/g"` >> $GITHUB_ENV
+          echo `cf env FDS-Designer-Persistent | grep -e 'aws_access_key_id' -e 'aws_secret_access_key' -e 'bucket_name' | sed "s/\"//g" | sed "s/,//g" | sed "s/: /=/g"` 
           echo "echoing ${{ env.aws_access_key_id }}"
           cf env FDS-Designer-Persistent | grep "aws_access_key_id"
           cf env FDS-Designer-Persistent | grep "aws_secret_access_key"
